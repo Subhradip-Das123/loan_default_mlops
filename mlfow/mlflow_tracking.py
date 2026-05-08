@@ -14,19 +14,33 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, stratify=y, test_size=0.2, random_state=42
 )
 
-# Start experiment
+# Set experiment
 mlflow.set_experiment("Loan Default Prediction")
 
 with mlflow.start_run(run_name="NaiveBayes_Run"):
+
     model = GaussianNB()
     model.fit(X_train, y_train)
 
     preds = model.predict(X_test)
     probs = model.predict_proba(X_test)[:, 1]
 
-    mlflow.log_param("model", "NaiveBayes")
+    # Log parameters
+    mlflow.log_param("model_type", "NaiveBayes")
+    mlflow.log_param("dataset", "Loan Default")
+    mlflow.log_param("features", X.shape[1])
+
+    # Log metrics
     mlflow.log_metric("accuracy", accuracy_score(y_test, preds))
     mlflow.log_metric("f1_score", f1_score(y_test, preds))
     mlflow.log_metric("roc_auc", roc_auc_score(y_test, probs))
 
-    mlflow.sklearn.log_model(model, "model")
+    # Log & register model
+    mlflow.sklearn.log_model(
+        model,
+        artifact_path="model",
+        registered_model_name="LoanDefaultModel"
+    )
+
+print("✅ MLflow run logged and model registered")
+
