@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 
-# Load data
+# Load processed data
 df = pd.read_csv("data/processed_data.csv")
 X = df.drop("loan_status", axis=1)
 y = df["loan_status"]
@@ -28,7 +28,6 @@ with mlflow.start_run(run_name="NaiveBayes_Run"):
     # Log parameters
     mlflow.log_param("model_type", "NaiveBayes")
     mlflow.log_param("dataset", "Loan Default")
-    mlflow.log_param("features", X.shape[1])
 
     # Log metrics
     mlflow.log_metric("accuracy", accuracy_score(y_test, preds))
@@ -43,4 +42,3 @@ with mlflow.start_run(run_name="NaiveBayes_Run"):
     )
 
 print("✅ MLflow run logged and model registered")
-
